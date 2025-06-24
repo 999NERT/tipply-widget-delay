@@ -2,72 +2,70 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>Widget Tipply: ukrycie raz (30s) po 1s widoczności</title>
+  <title>Widget Tipply: chowanie co alert na 30 s</title>
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      width: 100vw;
-      height: 100vh;
+      margin: 0; padding: 0;
+      width: 100vw; height: 100vh;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
       background: #000;
-      color: #fff;
-      font-family: sans-serif;
+      display: flex; flex-direction: column;
+      color: #fff; font-family: sans-serif;
     }
     #status {
-      text-align: center;
-      padding: 10px;
+      padding: 8px;
       background: #222;
+      text-align: center;
       z-index: 2;
     }
     #widget-container {
-      flex: 1;
       position: relative;
+      flex: 1;
     }
     #widget-container iframe {
       position: absolute;
       top: 0; left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       border: none;
     }
   </style>
 </head>
 <body>
-  <div id="status">Widget widoczny</div>
-  <div id="widget-container"></div>
+  <div id="status">Oczekuję alertów Tipply…</div>
+  <div id="widget-container">
+    <iframe id="tipply-iframe"
+      src="https://widgets.tipply.pl/TIP_ALERT/ec34c695-204d-445d-9362-43766d13bb27"
+      allow="autoplay">
+    </iframe>
+  </div>
 
   <script>
-    // Czas widoczności przed ukryciem: 1 sekunda
-    const initialVisibleMs = 1000;
-    const hideDurationMs = 30000; // 30 sekund ukrycia
+    const HIDE_DURATION = 30000; // 30 s
+    const ALLOWED_ORIGIN = "https://widgets.tipply.pl";
 
-    window.onload = () => {
-      const statusEl = document.getElementById('status');
-      const container = document.getElementById('widget-container');
+    const statusEl = document.getElementById("status");
+    const container = document.getElementById("widget-container");
 
-      // Tworzymy iframe od razu, by widget mógł się załadować w tle
-      const iframe = document.createElement('iframe');
-      iframe.src = "https://widgets.tipply.pl/TIP_ALERT/ec34c695-204d-445d-9362-43766d13bb27";
-      iframe.allow = "autoplay";
-      container.appendChild(iframe);
-      container.style.display = 'block';
-      statusEl.textContent = `Widget będzie widoczny 1s, potem ukryty na 30s...`;
-
-      // Po 1s ukrywamy
+    // Funkcja chowa widget i przywraca po HIDE_DURATION
+    function hideThenShow() {
+      container.style.display = "none";
+      statusEl.textContent = `Alert! Ukrywam widget na ${HIDE_DURATION/1000}s…`;
       setTimeout(() => {
-        container.style.display = 'none';
-        statusEl.textContent = `Widget ukryty. Za ${hideDurationMs/1000}s pojawi się ponownie.`;
+        container.style.display = "block";
+        statusEl.textContent = "Widget znowu widoczny, czekam na kolejny alert…";
+      }, HIDE_DURATION);
+    }
 
-        // Po 30s pokazujemy ponownie
-        setTimeout(() => {
-          container.style.display = 'block';
-          statusEl.textContent = 'Widget ponownie widoczny';
-        }, hideDurationMs);
-      }, initialVisibleMs);
-    };
+    // Nasłuchujemy wszystkich postMessage od Tipply
+    window.addEventListener("message", e => {
+      if (e.origin === ALLOWED_ORIGIN) {
+        // Każdy komunikat z Tipply traktujemy jako nowy alert
+        hideThenShow();
+      }
+    });
+
+    // Poinformuj użytkownika, że gotowi jesteśmy na alerty
+    statusEl.textContent = "Widget załadowany, czekam na alert Tipply…";
   </script>
 </body>
 </html>
