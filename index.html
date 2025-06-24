@@ -2,46 +2,71 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>Cykliczne ukrycie raz (30s) dla widgetu Tipply</title>
+  <title>Widget Tipply: ukrycie raz na 30s</title>
   <style>
     html, body {
-      margin: 0; padding: 0;
-      width: 100vw; height: 100vh;
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      flex-direction: column;
       background: #000;
+      color: #fff;
+      font-family: sans-serif;
+    }
+    #status {
+      text-align: center;
+      padding: 10px;
+      background: #222;
+      z-index: 2;
     }
     #widget-container {
-      width: 100%; height: 100%;
-      position: absolute; top: 0; left: 0;
+      flex: 1;
+      position: relative;
     }
-    iframe {
+    #widget-container iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
       border: none;
-      width: 100%; height: 100%;
     }
   </style>
 </head>
 <body>
-  <div id="widget-container">
-    <iframe id="tipply-iframe"
-      src="https://widgets.tipply.pl/TIP_ALERT/ec34c695-204d-445d-9362-43766d13bb27"
-      allow="autoplay">
-    </iframe>
-  </div>
+  <div id="status">Widget widoczny</div>
+  <div id="widget-container"></div>
 
   <script>
-    // Jeśli chcesz, aby widget był widoczny przez jakiś czas przed ukryciem, zmień initialVisibleMs.
-    const initialVisibleMs = 0; // 0 = ukrycie natychmiast po załadowaniu
-    const hideDurationMs = 30000; // 30 sekund
+    // Ustawienia:
+    const initialVisibleMs = 5000; // czas widoczny przed ukryciem, ms (np. 5000 = 5s). Dla natychmiastowego ukrycia ustaw 0.
+    const hideDurationMs = 30000; // 30 sekund ukrycia
 
     window.onload = () => {
+      const statusEl = document.getElementById('status');
       const container = document.getElementById('widget-container');
-      // Jeżeli initialVisibleMs > 0, widget zostanie ukryty dopiero po tym czasie. Przy 0: natychmiast.
+
+      // Tworzymy iframe od razu, by widget mógł się załadować w tle
+      const iframe = document.createElement('iframe');
+      iframe.src = "https://widgets.tipply.pl/TIP_ALERT/ec34c695-204d-445d-9362-43766d13bb27";
+      iframe.allow = "autoplay";
+      container.appendChild(iframe);
+      container.style.display = 'block';
+      statusEl.textContent = initialVisibleMs > 0
+        ? `Widget będzie widoczny ${initialVisibleMs/1000}s, potem ukryty na 30s...`
+        : `Widget ukryty od razu na 30s...`;
+
+      // Po initialVisibleMs ukrywamy
       setTimeout(() => {
         container.style.display = 'none';
-        // po 30s pokaż ponownie i zakończ
+        statusEl.textContent = `Widget ukryty. Za ${hideDurationMs/1000}s pojawi się ponownie.`;
+
+        // Po hideDurationMs pokazujemy ponownie i kończymy
         setTimeout(() => {
           container.style.display = 'block';
+          statusEl.textContent = 'Widget ponownie widoczny';
         }, hideDurationMs);
       }, initialVisibleMs);
     };
