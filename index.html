@@ -2,58 +2,27 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>Opóźniony Widget Tipply (1s delay)</title>
+  <title>Opóźniony Widget Tipply</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      background-color: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: sans-serif;
-      color: #fff;
-    }
-
-    #loading {
-      font-size: 24px;
-    }
-
     #widget-container {
       display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 9999;
-    }
-
-    iframe {
       width: 100%;
-      height: 100%;
-      border: none;
+      height: 300px;
     }
   </style>
 </head>
 <body>
-  <div id="loading">Ładowanie Tipply widget... (1s)</div>
-  <div id="widget-container"></div>
+  <h1>Opóźniony Widget Tipply (30s delay)</h1>
+  <div id="widget-container">
+    <iframe src="https://widgets.tipply.pl/TIP_ALERT/ec34c695-204d-445d-9362-43766d13bb27" 
+            width="400" height="300" frameborder="0" scrolling="no"></iframe>
+  </div>
 
   <script>
+    // Opóźnij pokazanie widgetu o 30 sekund (30000 ms)
     setTimeout(() => {
-      document.getElementById("loading").style.display = "none";
-      const container = document.getElementById("widget-container");
-      container.style.display = "block";
-
-      const iframe = document.createElement("iframe");
-      iframe.src = "https://widgets.tipply.pl/TIP_ALERT/ec34c695-204d-445d-9362-43766d13bb27";
-      iframe.allow = "autoplay";
-      container.appendChild(iframe);
-    }, 1000); // 1 sekunda = 1000 ms
+      document.getElementById('widget-container').style.display = 'block';
+    }, 30000);
   </script>
 </body>
 </html>
